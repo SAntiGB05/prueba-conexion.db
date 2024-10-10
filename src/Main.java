@@ -9,7 +9,7 @@ public class Main {
             myConn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/project",
                     "root",
-                    "rootpassword"
+                    ""
             );
             System.out.println("Genial, nos conectamos");
 
