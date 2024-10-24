@@ -2,14 +2,8 @@ import java.sql.*;
 
 public class ConexionMySQL {
 
-    public static void main(String[] args) {
-        Conexion();
-    }
-
-    public static void Conexion(){
+    public Connection Conexion() {
         Connection myConn = null;
-        Statement myStmt = null;
-        ResultSet myRes = null;
         try {
             myConn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/project",
@@ -17,67 +11,64 @@ public class ConexionMySQL {
                     ""
             );
             System.out.println("Genial, nos conectamos");
-
-            // realizamos una consulta a la base de datos
-            myStmt = myConn.createStatement();
-            myRes = myStmt.executeQuery("SELECT * FROM employees");
-
-            // iteramos los resultados para imprimir en consola.
-            while (myRes.next()){
-                System.out.println(myRes.getString("first_name"));
-            }
-
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Algo salio mal :(");
+            System.out.println("Algo salió mal :(");
         }
+        return myConn;
     }
 
     // Método para insertar un empleado
-    private static void insertarEmpleado(Connection conexion, String nombre, String cargo, double salario)
+    public void insertarEmpleado(Connection conexion, String first_name, String pa_surname, String ma_surname, String email, double salary)
             throws SQLException {
-        String sql = "INSERT INTO empleados (nombre, cargo, salario) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO employees (first_name, pa_surname, ma_surname, email, salary) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = conexion.prepareStatement(sql)) {
-            pstmt.setString(1, nombre);
-            pstmt.setString(2, cargo);
-            pstmt.setDouble(3, salario);
+            pstmt.setString(1, first_name);
+            pstmt.setString(2, pa_surname);
+            pstmt.setString(3, ma_surname);
+            pstmt.setString(4, email);
+            pstmt.setDouble(5, salary);
             pstmt.executeUpdate();
             System.out.println("Empleado insertado correctamente!");
         }
     }
 
     // Método para consultar empleados
-    private static void consultarEmpleados(Connection conexion) throws SQLException {
-        String sql = "SELECT * FROM empleados";
+    public void consultarEmpleados(Connection conexion) throws SQLException {
+        String sql = "SELECT * FROM employees";
         try (Statement stmt = conexion.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                System.out.printf("ID: %d, Nombre: %s, Cargo: %s, Salario: %.2f%n",
+                System.out.printf("ID: %d, Nombre: %s, Apellido Paterno: %s, Apellido Materno: %s, Email: %s, Salario: %.2f%n",
                         rs.getInt("id"),
-                        rs.getString("nombre"),
-                        rs.getString("cargo"),
-                        rs.getDouble("salario"));
+                        rs.getString("first_name"),
+                        rs.getString("pa_surname"),
+                        rs.getString("ma_surname"),
+                        rs.getString("email"),
+                        rs.getDouble("salary"));
             }
         }
     }
 
     // Método para actualizar un empleado
-    private static void actualizarEmpleado(Connection conexion, int id, String nombre, String cargo, double salario)
+    public void actualizarEmpleado(Connection conexion, int id, String first_name, String pa_surname, String ma_surname, String email, double salary)
             throws SQLException {
-        String sql = "UPDATE empleados SET nombre = ?, cargo = ?, salario = ? WHERE id = ?";
+        String sql = "UPDATE employees SET first_name = ?, pa_surname = ?, ma_surname = ?, email = ?, salary = ? WHERE id = ?";
         try (PreparedStatement pstmt = conexion.prepareStatement(sql)) {
-            pstmt.setString(1, nombre);
-            pstmt.setString(2, cargo);
-            pstmt.setDouble(3, salario);
-            pstmt.setInt(4, id);
+            pstmt.setString(1, first_name);
+            pstmt.setString(2, pa_surname);
+            pstmt.setString(3, ma_surname);
+            pstmt.setString(4, email);
+            pstmt.setDouble(5, salary);
+            pstmt.setInt(6, id);
             pstmt.executeUpdate();
             System.out.println("Empleado actualizado correctamente!");
         }
     }
 
     // Método para eliminar un empleado
-    private static void eliminarEmpleado(Connection conexion, int id) throws SQLException {
-        String sql = "DELETE FROM empleados WHERE id = ?";
+    public void eliminarEmpleado(Connection conexion, int id) throws SQLException {
+        String sql = "DELETE FROM employees WHERE id = ?";
         try (PreparedStatement pstmt = conexion.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
